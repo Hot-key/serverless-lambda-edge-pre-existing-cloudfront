@@ -1,10 +1,14 @@
 {
-  "name": "serverless-lambda-edge-pre-existing-cloudfront",
+  "name": "@hot-key/serverless-lambda-edge-pre-existing-cloudfront",
   "version": "1.1.5",
   "description": "The Serverless Framework plugin which creates Lambda@Edge against pre-existing CloudFront.",
   "main": "index.js",
-  "author": "serverless-operations",
+  "author": "Hot-key",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/@Hot-key/serverless-lambda-edge-pre-existing-cloudfront.git"
+  },
   "scripts": {
     "lint": "eslint .",
     "fmt": "eslint . --fix --cache",

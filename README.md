@@ -1,3 +1,5 @@
+# Hot-key Fork Version
+
 # Serverless Lambda Edge PreExisting CloudFront
 A Serverless Framework plugin which associates Lambda@Edge against pre-existing CloudFront distributions.
 
@@ -26,6 +28,11 @@ functions:
           includeBody: false # Whether including body or not within request
         # ---- Optional Property -----
           stage: dev # Specify the stage at which you want this CloudFront distribution to be updated
+          minTTL: 0 # CloudFront Minimum TTL you want to set
+          maxTTL: 31536000 # CloudFront Maximum TTL you want to set
+          defaultTTL: 3600 # CloudFront Default TTL you want to set
+          cookies:
+            forward: none # CloudFront Forward Cookies "none", "whitelist", "all"
 
 plugins:
   - serverless-lambda-edge-pre-existing-cloudfront
