@@ -110,7 +110,13 @@ class ServerlessLambdaEdgePreExistingCloudFront {
           eventType: { type: 'string' },
           pathPattern: { type: 'string' },
           includeBody: { type: 'boolean' },
-          stage: { type: 'string' }
+          stage: { type: 'string' },
+          minTTL: { type: 'number' },
+          defaultTTL: { type: 'number' },
+          maxTTL: { type: 'number' },
+          cookies: { 
+            forward: {type: 'string' }
+            }
         },
         required: ['distributionId', 'eventType', 'pathPattern', 'includeBody']
       })
@@ -143,6 +149,20 @@ class ServerlessLambdaEdgePreExistingCloudFront {
           functionName,
           functionArn
         )
+        if(event.preExistingCloudFront.minTTL){
+          cacheBehaviors.Items[i].MinTTL = event.preExistingCloudFront.minTTL;
+        }
+        if(event.preExistingCloudFront.defaultTTL){
+          cacheBehaviors.Items[i].DefaultTTL = event.preExistingCloudFront.defaultTTL;
+        }
+        if(event.preExistingCloudFront.maxTTL){
+          cacheBehaviors.Items[i].MaxTTL =  event.preExistingCloudFront.maxTTL;
+        }
+        if(event.preExistingCloudFront.cookies){
+          if(event.preExistingCloudFront.cookies.forward){
+            cacheBehaviors.Items[i].ForwardedValues.Cookies.Forward = event.preExistingCloudFront.cookies.forward;
+          }
+        }
       }
     }
     return cacheBehaviors
