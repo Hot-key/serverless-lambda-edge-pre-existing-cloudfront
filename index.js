@@ -50,6 +50,10 @@ class ServerlessLambdaEdgePreExistingCloudFront {
                       functionObj.name,
                       functionArn
                     )
+                    config.DistributionConfig.DefaultCacheBehavior = await this.associateCacheBehaviorsFunction(
+                      config.DistributionConfig.DefaultCacheBehavior, 
+                      event
+                    )
                   } else {
                     config.DistributionConfig.CacheBehaviors = await this.associateNonDefaultCacheBehaviors(
                       config.DistributionConfig.CacheBehaviors,
@@ -118,7 +122,7 @@ class ServerlessLambdaEdgePreExistingCloudFront {
             forward: {type: 'string' }
             }
         },
-        required: ['distributionId', 'eventType', 'pathPattern', 'includeBody']
+        required: ['distributionId', 'pathPattern', 'includeBody']
       })
     }
   }
@@ -173,13 +177,34 @@ class ServerlessLambdaEdgePreExistingCloudFront {
       (x) => x.EventType !== event.preExistingCloudFront.eventType
     )
     lambdaFunctionAssociations.Items = originals
-    lambdaFunctionAssociations.Items.push({
-      LambdaFunctionARN: functionArn,
-      IncludeBody: event.preExistingCloudFront.includeBody,
-      EventType: event.preExistingCloudFront.eventType
-    })
+    if(event.preExistingCloudFront.eventType !== undefined){
+      lambdaFunctionAssociations.Items.push({
+        LambdaFunctionARN: functionArn,
+        IncludeBody: event.preExistingCloudFront.includeBody,
+        EventType: event.preExistingCloudFront.eventType
+      })
+    }
     lambdaFunctionAssociations.Quantity = lambdaFunctionAssociations.Items.length
     return lambdaFunctionAssociations
+  }
+
+  async associateCacheBehaviorsFunction(cacheBehaviors, event) {
+    if(event.preExistingCloudFront.minTTL){
+      cacheBehaviors.MinTTL = event.preExistingCloudFront.minTTL;
+    }
+    if(event.preExistingCloudFront.defaultTTL){
+      cacheBehaviors.DefaultTTL = event.preExistingCloudFront.defaultTTL;
+    }
+    if(event.preExistingCloudFront.maxTTL){
+      cacheBehaviors.MaxTTL =  event.preExistingCloudFront.maxTTL;
+    }
+    if(event.preExistingCloudFront.cookies){
+      if(event.preExistingCloudFront.cookies.forward){
+        cacheBehaviors.ForwardedValues.Cookies.Forward = event.preExistingCloudFront.cookies.forward;
+      }
+    }
+
+    return cacheBehaviors;
   }
 
   async getlatestVersionLambdaArn(functionName, marker) {
